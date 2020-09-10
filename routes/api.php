@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/profile/auth', [ProfileController::class, 'auth'])->name('profile.auth');
+Route::post('/profile', [ProfileController::class, 'store'])->name('profile.store');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/revoke', [ProfileController::class, 'revoke'])->name('profile.revoke');
+    Route::get('/profile/revoke-all', [ProfileController::class, 'revokeAll'])->name('profile.revoke-all');
 });
