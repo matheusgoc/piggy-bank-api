@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Category;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Response;
@@ -98,6 +99,9 @@ class ProfileRepository
             $user->password = Hash::make($data['password']);
             $user->save();
 
+            // attach categories suggestions
+            $this->attachCategoriesSuggestions($user);
+
             // create profile
             $profile = $user->profile()->create($data);
 
@@ -112,6 +116,17 @@ class ProfileRepository
             DB::rollBack();
             throw $ex;
         }
+    }
+
+    /**
+     * Aggregates categories suggestions for the user
+     *
+     * @param User $user
+     */
+    private function attachCategoriesSuggestions(User $user) {
+
+        $arrCategoriesId = Category::where('is_suggestion', true)->pluck('id');
+        $user->categories()->attach($arrCategoriesId);
     }
 
     /**

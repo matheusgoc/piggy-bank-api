@@ -55,7 +55,6 @@ class ProfileController extends Controller
         ]);
 
         $profile = $this->repo->create($request->all());
-        \Log::info('profile', [$profile]);
         return new ProfileResource($profile);
     }
 
@@ -68,8 +67,8 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'firstname' => 'alpha',
-            'lastname' => 'alpha',
+            'firstname' => 'required|alpha',
+            'lastname' => 'required|alpha',
         ]);
 
         $profile = $this->repo->update($request->all());
