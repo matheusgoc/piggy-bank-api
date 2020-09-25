@@ -19,6 +19,7 @@ class Category extends Model
     }
 
     public function parents() {
+
         return $this->belongsToMany(
             'App\Models\Category',
             'categories_groups',
@@ -28,11 +29,22 @@ class Category extends Model
     }
 
     public function subs() {
+
         return $this->belongsToMany(
             'App\Models\Category',
             'categories_groups',
             'parent_id',
             'sub_id'
+        );
+    }
+
+    public function transactions() {
+
+        return $this->belongsToMany(
+            'App\Models\Transaction',
+            'transaction_user',
+            'transaction_id',
+            'category_id'
         );
     }
 }

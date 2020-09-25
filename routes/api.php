@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,4 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', 'CategoryController')->except(['delete', 'destroy']);
     Route::delete('categories/{category}/{exchange?}', [CategoryController::class, 'destroy'])->name('categories.destroy');
     Route::get('categories/search/{search}', [CategoryController::class, 'search'])->name('categories.search');
+
+    // transaction
+    Route::apiResource('transactions', 'TransactionController')->except(['index', 'update']);
+    Route::get('transactions/{date?}/{direction?}', [TransactionController::class, 'list'])->name('transactions.list');
+    Route::post('transactions/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
 });

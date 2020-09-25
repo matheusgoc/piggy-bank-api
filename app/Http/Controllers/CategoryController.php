@@ -6,7 +6,6 @@ use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
@@ -53,8 +52,6 @@ class CategoryController extends Controller
         $request->validate([
             'exchange' => 'max:50',
         ]);
-
-        Log::info('name', [$exchange]);
 
         $categoryToExchange = $this->repo->delete($category, $exchange);
 

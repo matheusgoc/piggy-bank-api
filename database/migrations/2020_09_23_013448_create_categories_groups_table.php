@@ -17,14 +17,12 @@ class CreateCategoriesGroupsTable extends Migration
             $table->unsignedBigInteger('parent_id');
             $table->unsignedBigInteger('sub_id');
             $table->primary(['parent_id', 'sub_id']);
-            $table->foreign('parent_id', 'fk_categories_groups_parent_id')
-                ->on('categories')
-                ->references('id');
-            $table->foreign('sub_id', 'fk_categories_groups_sub_id')
-                ->on('categories')
-                ->references('id');
-            $table->index('parent_id', 'ix_fk_categories_groups_parent_id');
-            $table->index('sub_id', 'ix_fk_categories_groups_sub_id');
+            $table->foreign('parent_id', 'fk_categories_groups_parent')
+                ->on('categories')->references('id');
+            $table->foreign('sub_id', 'fk_categories_groups_sub')
+                ->on('categories')->references('id');
+            $table->index('parent_id', 'ix_fk_categories_groups_parent');
+            $table->index('sub_id', 'ix_fk_categories_groups_sub');
         });
     }
 

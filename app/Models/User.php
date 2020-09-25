@@ -28,16 +28,18 @@ class User extends Authenticatable
 
     public $timestamps = true;
 
-    public function profile()
-    {
+    public function profile() {
+
         return $this->hasOne('App\Models\Profile');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function categories()
-    {
-        return $this->belongsToMany('App\Models\Category')->withTimestamps();;
+    public function categories() {
+
+        return $this->belongsToMany('App\Models\Category')->withTimestamps();
+    }
+
+    public function transactions() {
+
+        return $this->belongsToMany('App\Models\Transaction')->withTimestamps();
     }
 }

@@ -6,7 +6,6 @@ use App\Models\Category;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 /**
  * CategoryRepository
@@ -52,21 +51,18 @@ class CategoryRepository
     }
 
     /**
-     * Create a new transaction and associate it to the current user
+     * Create a category and/or associate it to the current user
      *
      * @param $name
      * @return Category|\Illuminate\Database\Eloquent\Model
      * @throws \Throwable
      */
-    public function create($name) {
+    public function create($name): Category {
 
         DB::beginTransaction();
         try {
 
-
             $category = Category::firstOrCreate(['name'=>$name]);
-
-            Log::info($category);
 
             $user = Auth::user();
             $exists = $user->categories()->where('categories.id', $category->id)->exists();
@@ -112,9 +108,7 @@ class CategoryRepository
             }
 
             // create and/or associate the exchange category
-            Log::info($exchange);
             $exchangeCategory = ($exchange)? $this->create($exchange) : null;
-            Log::info($exchangeCategory);
 
             DB::commit();
 
