@@ -6,7 +6,6 @@ use App\Http\Resources\TransactionUserResource;
 use App\Models\Transaction;
 use App\Repositories\TransactionRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
@@ -17,13 +16,20 @@ class TransactionController extends Controller
         $this->repo = new TransactionRepository();
     }
 
-    public function list($date, $direction)
+    public function list($year, $month, $limit = null)
     {
-        $transactionList = $this->repo->list($date, $direction);
+        $transactionList = $this->repo->list($year, $month, $limit);
 
-        foreach ($transactionList as $transaction) {
-            Log::info($transaction->id);
+        return TransactionUserResource::collection($transactionList);
+    }
+
+    public function listSlice($date = null, $direction = 'after', $limit = 30)
+    {
+        if (!$date) {
+            $date = date('Y-m-d', strtotime('last day of last month'));
         }
+
+        $transactionList = $this->repo->listSlice($date, $direction, $limit);
 
         return TransactionUserResource::collection($transactionList);
     }

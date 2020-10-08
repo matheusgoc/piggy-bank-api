@@ -16,25 +16,44 @@ use Illuminate\Support\Facades\Storage;
  */
 class TransactionRepository
 {
-    private const LIST_LIMIT = 30;
     private const UPLOAD_RECEIPT_PATH = 'receipts';
 
-    public function list($date, $direction = 'next') {
+    public function list($year, $month, $limit = null) {
+
+        $date = (new \DateTime())->setDate($year, $month, 1);
+        $start = $date->format('Y-m-d');
+        $end = $date->format('Y-m-t');
+
+        Log::info('TransactionRepository::list', [$date, $start, $end]);
+
+        $builder = TransactionUser::where('user_id', '=', Auth::id())
+            ->join('transactions', 'transaction_id', '=', 'id')
+            ->whereBetween('ordered_at', [$start, $end])
+            ->orderBy('ordered_at');
+
+        if ($limit) {
+            $builder->limit($limit);
+        }
+
+        DB::enableQueryLog();
+        $result = $builder->get();
+        Log::info('SQL', DB::getQueryLog());
+
+        return $result;
+    }
+
+    public function listSlice($date, $direction, $limit) {
 
         // DB::enableQueryLog();
+        // Log::info('SQL', DB::getQueryLog());
 
-        $operator = ($direction === 'next')? '>' : '<';
-
-        $transactions = TransactionUser::where('user_id', '=', Auth::id())
+        $operator = ($direction === 'after')? '>' : '<';
+        return TransactionUser::where('user_id', '=', Auth::id())
             ->join('transactions', 'transaction_id', '=', 'id')
             ->where('ordered_at', $operator, $date)
             ->orderBy('ordered_at')
-            ->limit(self::LIST_LIMIT)
+            ->limit($limit)
             ->get();
-
-        // Log::info('SQL', DB::getQueryLog());
-
-        return $transactions;
     }
 
     public function get(Transaction $transaction) {
@@ -48,8 +67,12 @@ class TransactionRepository
         DB::beginTransaction();
         try {
 
+            Log::info('file', [$file]);
+
             // upload receipt
             $receipt = $this->uploadReceipt($file);
+
+            Log::info('data', [$data]);
 
             // create Transaction
             $transaction = new Transaction();

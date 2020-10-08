@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // transaction
     Route::apiResource('transactions', 'TransactionController')->except(['index', 'update']);
-    Route::get('transactions/{date?}/{direction?}', [TransactionController::class, 'list'])->name('transactions.list');
+    Route::get('transactions/{year}/{month}/{limit?}', [TransactionController::class, 'list'])->name('transactions.list');
+    Route::get('transactions/slice/{date?}/{direction?}/{limit?}', [TransactionController::class, 'ListSlice'])->name('transactions.list-lice');
     Route::post('transactions/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
 });
