@@ -198,7 +198,7 @@ class TransactionRepository
 
         $receipt = null;
         if ($file) {
-            $receipt = $file->store('public/'.self::UPLOAD_RECEIPT_PATH);
+            $receipt = $file->storePublicly('public/'.self::UPLOAD_RECEIPT_PATH);
             $receipt = str_replace('public/', '', $receipt);
         }
 
