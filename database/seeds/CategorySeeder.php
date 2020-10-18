@@ -227,6 +227,10 @@ class CategorySeeder extends Seeder
 
             foreach ($this->groups as $parent => $subs) {
 
+                if (Category::where('name', $parent)->exists()) {
+                    continue;
+                }
+
                 $parentCategory = new Category();
                 $parentCategory->name = $parent;
                 $parentCategory->is_default = true;
