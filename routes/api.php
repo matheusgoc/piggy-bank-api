@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 // profile
 Route::post('profile/auth', [ProfileController::class, 'auth'])->name('profile.auth');
 Route::post('profile', [ProfileController::class, 'store'])->name('profile.store');
+Route::patch('profile/reset-password', [ProfileController::class, 'resetPassword'])->name('profile.reset-password');
+Route::patch('profile/refresh-pin-time', [ProfileController::class, 'refreshPINTime'])->name('profile.refresh-pin-time');
+Route::patch('profile/change-password-with-pin', [ProfileController::class, 'changePasswordWithPIN'])->name('profile.change-password-with-pin');
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -29,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('profile/revoke', [ProfileController::class, 'revoke'])->name('profile.revoke');
     Route::get('profile/revoke-all', [ProfileController::class, 'revokeAll'])->name('profile.revoke-all');
+    Route::patch('profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
 
     // category
     Route::apiResource('categories', 'CategoryController')->except(['delete', 'destroy']);

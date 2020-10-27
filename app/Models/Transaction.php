@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * @mixin IdeHelperTransaction
  * @property TransactionUser $currentUserTransaction
  * @property Transaction[] $subTransactions
+ * @mixin IdeHelperTransaction
  */
 class Transaction extends Model
 {

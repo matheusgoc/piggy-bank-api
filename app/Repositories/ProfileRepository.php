@@ -2,13 +2,16 @@
 
 namespace App\Repositories;
 
+use App\Mail\ResetPassword;
 use App\Models\Category;
 use App\Models\Profile;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -17,6 +20,9 @@ use Illuminate\Validation\ValidationException;
  */
 class ProfileRepository
 {
+    // how long the PIN code can live in minutes
+    const PIN_TIMEOUT = 5;
+
     /**
      * Authenticate user
      *
@@ -111,7 +117,7 @@ class ProfileRepository
 
             return $profile;
 
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
 
             DB::rollBack();
             throw $ex;
@@ -150,7 +156,7 @@ class ProfileRepository
 
             return $profile;
 
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
 
             DB::rollBack();
             throw $ex;
@@ -176,10 +182,129 @@ class ProfileRepository
 
             DB::commit();
 
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
 
             DB::rollBack();
             throw $ex;
         }
+    }
+
+    /**
+     * Generate a PIN to the user
+     *
+     * @param User $user
+     * @return string
+     */
+    public function generatePIN(User $user)
+    {
+        $pin = '';
+        for ($i = 0; $i < 4; $i++) {
+            $pin .= mt_rand(0, 9);
+        };
+        $user->pin = Hash::make($pin);
+        $user->pinned_at = date('c');
+        $user->save();
+
+        return $pin;
+    }
+
+    /**
+     * Check whether a given PIN exists or is expired
+     *
+     * @param $email
+     * @param $pin
+     */
+    public function checkPIN($email, $pin)
+    {
+        // get the user by email
+        $user = User::where('email', $email)->first();
+
+        // check if the PIN match
+        if (!$user || !$user->pin || !Hash::check($pin, $user->pin)) {
+            abort(
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                'The PIN does not match'
+            );
+        }
+
+        // check if the PIN has been expired
+        if(!$user->pinned_at || time() - strtotime($user->pinned_at) > self::PIN_TIMEOUT * 60 ) {
+            abort(
+                Response::HTTP_REQUEST_TIMEOUT,
+                'The PIN has been expired'
+            );
+        }
+    }
+
+    /**
+     * Updates the PIN time for the current
+     *
+     * @param $email
+     * @param $pin
+     */
+    public function refreshPINTime($email, $pin)
+    {
+        $this->checkPIN($email, $pin);
+        User::where('email', $email)->update([
+            'pinned_at' => date('c')
+        ]);
+    }
+
+    /**
+     * Send an email to the user with a PIN to reset the password
+     *
+     * @param $email
+     */
+    public function sendResetEmail($email)
+    {
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            abort(
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                'The email provided does not exists'
+            );
+        }
+        $pin = $this->generatePIN($user);
+        Mail::to($user->email)->send(new ResetPassword($user, $pin));
+    }
+
+    /**
+     * Changes the user's password using only the email as reference
+     *
+     * @param $email
+     * @param $password
+     */
+    public function changePasswordByEmail($email, $password)
+    {
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            abort(
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                'The email provided does not exists'
+            );
+        }
+        $user->password = Hash::make($password);
+        $user->pin = null;
+        $user->pinned_at = null;
+        $user->save();
+    }
+
+    /**
+     * Changes the user's password by checking the original one
+     *
+     * @param $password
+     * @param $newPassword
+     */
+    public function changePassword($password, $newPassword)
+    {
+        $user = Auth::user();
+        if (!Hash::check($password, $user->password)) {
+            abort(
+                Response::HTTP_FORBIDDEN,
+                'The original password are incorrect'
+            );
+        }
+        $user->password = Hash::make($newPassword);
+        $user->save();
     }
 }

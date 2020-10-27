@@ -17,7 +17,9 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('email')->unique('ix_users_email');
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password', 100);
+            $table->string('pin', 100)->nullable();
+            $table->timestamp('pinned_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes('deleted_at');

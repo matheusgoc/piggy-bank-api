@@ -36,12 +36,14 @@ class ProfileController extends Controller
     public function revoke()
     {
         $this->repo->revoke();
+
         return response()->noContent();
     }
 
     public function revokeAll()
     {
         $this->repo->revokeAll();
+
         return response()->noContent();
     }
 
@@ -55,12 +57,14 @@ class ProfileController extends Controller
         ]);
 
         $profile = $this->repo->create($request->all());
+
         return new ProfileResource($profile);
     }
 
     public function show()
     {
         $profile = $this->repo->get();
+
         return new ProfileResource($profile);
     }
 
@@ -72,12 +76,67 @@ class ProfileController extends Controller
         ]);
 
         $profile = $this->repo->update($request->all());
+
         return new ProfileResource($profile);
     }
 
     public function destroy()
     {
         $this->repo->delete();
+
+        return response()->noContent();
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $this->repo->sendResetEmail($request->get('email'));
+
+        return response()->noContent();
+    }
+
+    public function refreshPINTime(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'pin' => 'required',
+        ]);
+
+        $this->repo->refreshPINTime($request->get('email'), $request->get('pin'));
+
+        return response()->noContent();
+    }
+
+    public function changePasswordWithPIN(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'pin' => 'required',
+            'password' => 'required',
+        ]);
+
+        $email = $request->get('email');
+        $pin = $request->get('pin');
+        $password = $request->get('password');
+
+        $this->repo->checkPIN($email, $pin);
+        $this->repo->changePasswordByEmail($email, $password);
+
+        return response()->noContent();
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required',
+            'new' => 'required',
+        ]);
+
+        $this->repo->changePassword($request->get('password'), $request->get('new'));
+
         return response()->noContent();
     }
 }
