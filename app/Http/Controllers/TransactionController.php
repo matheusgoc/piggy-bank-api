@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\TransactionUserResource;
 use App\Models\Transaction;
+use App\Repositories\ReportRepository;
 use App\Repositories\TransactionRepository;
 use Illuminate\Http\Request;
 
@@ -16,11 +17,23 @@ class TransactionController extends Controller
         $this->repo = new TransactionRepository();
     }
 
-    public function list($year, $month, $limit = null)
+    public function list($year, $month, $tz, $limit = null)
     {
-        $transactionList = $this->repo->list($year, $month, $limit);
+        //DB::enableQueryLog();
+        $reportRepo = new ReportRepository();
+        list($start, $end) = $this->getMonthPeriod($year, $month, $tz);
+        $transactionList = $this->repo->list($start, $end, $limit);
+        $generalSubTotals = $reportRepo->getSubtotals(null, $end);
+        $monthSubTotals = $reportRepo->getSubtotals($start, $end);
+        //Log::debug('SQL', DB::getQueryLog());
 
-        return TransactionUserResource::collection($transactionList);
+        return response()->json([
+            'transactions' => TransactionUserResource::collection($transactionList),
+            'reports' => [
+                'general' => $generalSubTotals,
+                'monthly' => $monthSubTotals,
+            ]
+        ]);
     }
 
     public function listSlice($date = null, $direction = 'after', $limit = 30)

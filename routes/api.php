@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,9 +42,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // transaction
     Route::apiResource('transactions', 'TransactionController')->except(['index', 'update']);
-    Route::get('transactions/{year}/{month}/{limit?}', [TransactionController::class, 'list'])->name('transactions.list');
+    Route::get('transactions/{year}/{month}/{tz}/{limit?}', [TransactionController::class, 'list'])->name('transactions.list');
     Route::get('transactions/slice/{date?}/{direction?}/{limit?}', [TransactionController::class, 'ListSlice'])->name('transactions.list-lice');
     Route::post('transactions/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
+
+    // report
+    Route::get('report/{year}/{month}/{tz}', [ReportController::class, 'index'])->name('report.index');
 });
 
 // config

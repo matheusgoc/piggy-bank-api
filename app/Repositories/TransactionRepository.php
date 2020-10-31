@@ -11,20 +11,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Category Repository
+ * TransactionRepository
  * @package App\Repositories
  */
 class TransactionRepository
 {
     private const UPLOAD_RECEIPT_PATH = 'receipts';
 
-    public function list($year, $month, $limit = null) {
-
-        $date = (new \DateTime())->setDate($year, $month, 1);
-        $start = $date->format('Y-m-d');
-        $end = $date->format('Y-m-t');
-
-        Log::info('TransactionRepository::list', [$date, $start, $end]);
+    public function list($start, $end, $limit = null) {
 
         $builder = TransactionUser::where('user_id', '=', Auth::id())
             ->join('transactions', 'transaction_id', '=', 'id')
@@ -35,17 +29,10 @@ class TransactionRepository
             $builder->limit($limit);
         }
 
-        DB::enableQueryLog();
-        $result = $builder->get();
-        Log::info('SQL', DB::getQueryLog());
-
-        return $result;
+        return $builder->get();
     }
 
     public function listSlice($date, $direction, $limit) {
-
-        // DB::enableQueryLog();
-        // Log::info('SQL', DB::getQueryLog());
 
         $operator = ($direction === 'after')? '>' : '<';
         return TransactionUser::where('user_id', '=', Auth::id())
