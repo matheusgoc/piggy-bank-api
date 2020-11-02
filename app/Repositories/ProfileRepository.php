@@ -198,7 +198,7 @@ class ProfileRepository
     public function generatePIN(User $user)
     {
         $pin = '';
-        for ($i = 0; $i < 4; $i++) {
+        for ($i = 0; $i < 6; $i++) {
             $pin .= mt_rand(0, 9);
         };
         $user->pin = Hash::make($pin);
@@ -222,7 +222,7 @@ class ProfileRepository
         // check if the PIN match
         if (!$user || !$user->pin || !Hash::check($pin, $user->pin)) {
             abort(
-                Response::HTTP_UNPROCESSABLE_ENTITY,
+                Response::HTTP_UNAUTHORIZED,
                 'The PIN does not match'
             );
         }
