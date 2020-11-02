@@ -19,7 +19,7 @@ class ReportSeeder extends Seeder
         TransactionUser::factory()
             ->times(720)
             ->create([
-                'user_id' => User::whereEmail('mgarc31@ilstu.edu')->first(),
+                'user_id' => User::whereEmail('matheus.goc@gmail.com')->first(),
             ]);
     }
 }

@@ -65,7 +65,7 @@ class ReportRepository
         $incomes = 0;
         $categories = [
             'incomes' => [],
-            'expenses' => []
+            'expenses' => [],
         ];
         foreach($subtotals as $row) {
             switch($row->type) {
@@ -78,6 +78,9 @@ class ReportRepository
             }
             $categories[$type][$row->name] += round(abs($row->subtotal), 2);
         }
+
+        if (count($categories['incomes']) == 0) $categories['incomes'] = new \stdClass();
+        if (count($categories['expenses']) == 0) $categories['expenses'] = new \stdClass();
 
         // retrieve totals
         return [

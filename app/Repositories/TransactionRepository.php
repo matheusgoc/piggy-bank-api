@@ -7,7 +7,6 @@ use App\Models\TransactionUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -54,12 +53,8 @@ class TransactionRepository
         DB::beginTransaction();
         try {
 
-            Log::info('file', [$file]);
-
             // upload receipt
             $receipt = $this->uploadReceipt($file);
-
-            Log::info('data', [$data]);
 
             // create Transaction
             $transaction = new Transaction();
