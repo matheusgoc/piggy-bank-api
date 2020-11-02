@@ -23,26 +23,26 @@ class ReportRepository
     public function getSubtotals($start = null, $end = null)
     {
         /*
-        select
-            tu.type,
-            c.name,
-            SUM(tu.amount) as subtotal
-        from
-            transactions t
-        join transaction_user tu on
-            tu.transaction_id = t.id
-        join categories c on
-            tu.category_id = c.id
-        where
-            t.ordered_at between '2020-01-01 00:00:00' and '2020-12-30 23:59:59'
-            t.deleted_at is null
-            tu.deleted_at is null
-        group by
-            tu.type,
-            c.name
-        order by
-            tu.type,
-            SUM(tu.amount) desc
+           select
+                tu.type,
+                c.name,
+                SUM(tu.amount) as subtotal
+            from
+                transactions t
+            join transaction_user tu on
+                tu.transaction_id = t.id
+            join categories c on
+                tu.category_id = c.id
+            where
+                t.ordered_at between ('2020-01-01 00:00:00' and '2020-12-30 23:59:59') and
+                t.deleted_at is null and
+                tu.deleted_at is null
+            group by
+                tu.type,
+                c.name
+            order by
+                tu.type,
+                SUM(ABS(tu.amount)) desc
         */
 
         $qb = DB::table('transactions', 't')
@@ -53,8 +53,7 @@ class ReportRepository
             ->whereNull('t.deleted_at')
             ->whereNull('tu.deleted_at')
             ->groupBy('tu.type', 'c.name')
-            ->orderBy('tu.type')
-            ->orderByRaw(DB::raw('SUM(tu.amount) desc'));
+            ->orderByRaw(DB::raw('SUM(ABS(tu.amount)) desc'));
 
         if ($start) $qb->where('t.ordered_at', '>=', $start);
         if ($end) $qb->where('t.ordered_at', '<=', $end);
