@@ -260,8 +260,8 @@ class ProfileRepository
         $user = User::where('email', $email)->first();
         if (!$user) {
             abort(
-                Response::HTTP_UNPROCESSABLE_ENTITY,
-                'The email provided does not exists'
+                Response::HTTP_FORBIDDEN,
+                'The given email does not exists'
             );
         }
         $pin = $this->generatePIN($user);
