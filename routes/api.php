@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BankingController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\ProfileController;
@@ -48,6 +49,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // report
     Route::get('report/{year}/{month}/{tz}', [ReportController::class, 'index'])->name('report.index');
+
+    // banking
+    Route::get('banking/token/link', [BankingController::class, 'getLinkToken'])->name('banking.token-link');
+    Route::post('banking/token/public', [BankingController::class, 'exchangePublicToken'])->name('banking.token-access');
+    Route::get('banking/institutions', [BankingController::class, 'getInstitutions'])->name('banking.institutions');
+    Route::get('banking/institutions/{institutionId}/accounts/', [BankingController::class, 'getAccounts'])->name('banking.accounts');
+    Route::get('banking/institutions/{institutionId}/transactions/{start}/{end}',
+        [BankingController::class, 'getTransactions'])->name('banking.transactions');
 });
 
 // config

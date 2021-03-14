@@ -43,4 +43,9 @@ class User extends Authenticatable
 
         return $this->belongsToMany('App\Models\Transaction')->withTimestamps();
     }
+
+    public function institutions() {
+
+        return $this->hasMany('App\Models\Institution');
+    }
 }
