@@ -34,7 +34,7 @@ class PlaidRepository
         );
     }
 
-    public function exchangePublicToken($publicToken)
+    public function exchangePublicToken($publicToken): Institution
     {
         $exchange = $this->plaid->items->exchangeToken($publicToken);
         $accessToken = $exchange->access_token;
@@ -53,6 +53,8 @@ class PlaidRepository
         $institution->access_token = $accessToken;
         $institution->logo = $instLogo;
         $institution->save();
+
+        return $institution;
     }
 
     public function getInstitutions()

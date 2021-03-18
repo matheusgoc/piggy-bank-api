@@ -23,11 +23,11 @@ class BankingController extends Controller
         return response()->json((array) $this->plaidRepo->createLinkToken());
     }
 
-    public function exchangePublicToken(Request $request): Response
+    public function exchangePublicToken(Request $request): InstitutionResource
     {
-        $this->plaidRepo->exchangePublicToken($request->post('public_token'));
+        $institution = $this->plaidRepo->exchangePublicToken($request->post('public_token'));
 
-        return response()->noContent();
+        return new InstitutionResource($institution);
     }
 
     public function getInstitutions(): AnonymousResourceCollection
