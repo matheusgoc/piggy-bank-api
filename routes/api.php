@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('banking/institutions/{institutionId}/accounts/', [BankingController::class, 'getAccounts'])->name('banking.accounts');
     Route::get('banking/institutions/{institutionId}/transactions/{start}/{end}',
         [BankingController::class, 'getTransactions'])->name('banking.transactions');
+    Route::delete('banking/institutions/{institutionId}', [BankingController::class, 'destroyInstitution'])->name('banking.institution.destroy');
 });
 
 // config

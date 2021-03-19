@@ -60,4 +60,11 @@ class BankingController extends Controller
             $offset
         ));
     }
+
+    public function destroyInstitution($institutionId): Response
+    {
+        $this->plaidRepo->deleteInstitution($institutionId);
+
+        return response()->noContent();
+    }
 }

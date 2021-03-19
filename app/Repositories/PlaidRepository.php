@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use App\Models\Institution;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use TomorrowIdeas\Plaid\Entities\User;
 use TomorrowIdeas\Plaid\Plaid;
@@ -90,5 +91,19 @@ class PlaidRepository
         $response = $this->plaid->transactions->list($accessToken, $startDate, $endDate, $options);
 
         return $response->transactions;
+    }
+
+    public function deleteInstitution($institutionId)
+    {
+        $institution = Auth::user()->institutions->where('id', $institutionId)->first();
+        if (!$institution) {
+            abort(
+                Response::HTTP_NOT_FOUND,
+                "Institution does not exists for the current user"
+            );
+        }
+
+        $this->plaid->items->remove($institution->access_token);
+        $institution->delete();
     }
 }
