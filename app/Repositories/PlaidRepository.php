@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Repositories;
-
 
 use App\Models\Institution;
 use Illuminate\Http\Response;
@@ -74,6 +72,13 @@ class PlaidRepository
     private function getAccessToken($institutionId)
     {
         $institution = Auth::user()->institutions->where('id', $institutionId)->first();
+
+        if (!$institution) {
+            abort(
+                Response::HTTP_NOT_FOUND,
+                "Institution does not exists for the current user"
+            );
+        }
 
         return $institution->access_token;
     }
