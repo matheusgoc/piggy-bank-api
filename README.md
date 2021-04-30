@@ -1,5 +1,7 @@
 # Piggy Bank API
 
+_Current Version 1.1.0_
+
 A RESTful API Web Service to support Piggy Bank App
 
 Piggy Bank API is a back-end Web Service based on REST API protocol 
@@ -16,9 +18,9 @@ transactions over time and review their spending
 through some reports, graphs, 
 and statistical insights.
 
-## Software
+## Stack
 
-This API adopts the last version of the following open-source software:
+This API adopts the following open-source language, framework, and database:
 
 - [PHP Language](http://php.net)
 - [Laravel Framework](https://laravel.com)
@@ -30,12 +32,9 @@ This API provides the following resources:
 
 - Profile
 - Transactions
-- Sub Transactions
-- Partners
 - Categories
 - Reports
-- Banking Accounts
-- Banking Accounts Transactions
+- Banking
 
 ## Set up
 
@@ -53,7 +52,7 @@ steps to set an environment:
     
 3. Create the database structure:
 
-    ### `php artisan migrate`
+    ### `php artisan migrate --seed`
     
 4. Generate the Application Key
 
@@ -61,7 +60,7 @@ steps to set an environment:
 
 5. Grant write permission to the storage folder:
 
-    ### `chmod a+U storage`
+    ### `chmod 775 storage`
     
 6. Generate a link for public storage:
 
